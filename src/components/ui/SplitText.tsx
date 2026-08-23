@@ -41,25 +41,24 @@ export default function SplitText({
 
       // Always land on the visible state; never leave anything clipped.
       const settle = () =>
-        gsap.set(chars, { opacity: 1, yPercent: 0, y: 0, filter: "blur(0px)" });
+        gsap.set(chars, { opacity: 1, y: 0 });
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         settle();
         return;
       }
 
-      gsap.set(chars, { opacity: 0, y: "0.7em", filter: "blur(10px)" });
+      gsap.set(chars, { opacity: 0, y: "0.5em" });
       const tween = gsap.to(chars, {
         opacity: 1,
         y: 0,
-        filter: "blur(0px)",
         ease: "power3.out",
-        duration: 1.05,
+        duration: 0.85,
         stagger,
         delay,
         overwrite: "auto",
         ...(trigger === "scroll"
-          ? { scrollTrigger: { trigger: el, start: "top 85%", once: true } }
+          ? { scrollTrigger: { trigger: el, start: "top 88%", once: true } }
           : {}),
       });
 

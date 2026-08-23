@@ -23,18 +23,28 @@ export default function Nav() {
       if (!el) return;
       gsap.fromTo(el, { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 2.1, ease: "power3.out" });
 
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      let last = 0;
+      let isHidden = false;
+      let lastY = 0;
+
       const st = ScrollTrigger.create({
         start: 0,
         end: "max",
         onUpdate: (self) => {
-          const y = self.scroll();
           if (open) return;
-          if (y < 80) gsap.to(el, { yPercent: 0, duration: 0.4 });
-          else if (self.direction === 1 && y - last > 4) gsap.to(el, { yPercent: -140, duration: 0.4 });
-          else if (self.direction === -1) gsap.to(el, { yPercent: 0, duration: 0.4 });
-          last = y;
+          const y = self.scroll();
+          if (y < 80) {
+            if (isHidden) {
+              isHidden = false;
+              gsap.to(el, { yPercent: 0, duration: 0.35, ease: "power2.out", overwrite: "auto" });
+            }
+          } else if (self.direction === 1 && y - lastY > 8 && !isHidden) {
+            isHidden = true;
+            gsap.to(el, { yPercent: -140, duration: 0.35, ease: "power2.out", overwrite: "auto" });
+          } else if (self.direction === -1 && isHidden) {
+            isHidden = false;
+            gsap.to(el, { yPercent: 0, duration: 0.35, ease: "power2.out", overwrite: "auto" });
+          }
+          lastY = y;
         },
       });
       return () => st.kill();

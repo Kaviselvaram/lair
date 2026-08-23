@@ -50,7 +50,7 @@ export default function SmoothScrollProvider({
       };
 
       gsap.ticker.add(tickerCallback);
-      gsap.ticker.lagSmoothing(0);
+      gsap.ticker.lagSmoothing(500, 33);
 
       // Lightweight pointer & scroll store updater without DOM style invalidations
       let lastTime = performance.now();

@@ -33,11 +33,12 @@ export default function Gallery() {
           scrollTrigger: {
             trigger: root.current,
             start: "top top",
-            end: () => `+=${scrollLen + window.innerHeight * 0.6}`,
-            scrub: 1,
+            end: () => `+=${scrollLen + window.innerHeight * 0.5}`,
+            scrub: 0.8,
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            fastScrollEnd: true,
           },
         });
         return () => tween.kill();

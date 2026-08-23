@@ -33,29 +33,36 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
       ).matches;
 
       const counter = { v: 0 };
-      const tl = gsap.timeline({ onComplete: finish });
+      const tl = gsap.timeline({
+        onComplete: finish,
+      });
 
       tl.to(counter, {
         v: 100,
-        duration: reduced ? 0.3 : 1.9,
-        ease: "power2.inOut",
+        duration: reduced ? 0.2 : 1.1,
+        ease: "power2.out",
         onUpdate: () => setPct(Math.round(counter.v)),
       });
 
-      // Curtain lift + wordmark exit.
+      // Wordmark exit
       tl.to(
         ".pl-word, .pl-pct",
-        { opacity: 0, y: -18, duration: 0.6, ease: "power3.inOut", stagger: 0.04 },
-        "-=0.15",
+        { opacity: 0, y: -16, duration: 0.4, ease: "power2.inOut", stagger: 0.03 },
+        "-=0.1",
       );
+
+      // Curtain lift with callback at start of lift for instant, seamless hero transition
       tl.to(
         root.current,
         {
           yPercent: -100,
-          duration: reduced ? 0.2 : 1.0,
+          duration: reduced ? 0.2 : 0.75,
           ease: "power4.inOut",
+          onStart: () => {
+            finish();
+          },
         },
-        "-=0.2",
+        "-=0.15",
       );
       tl.set(root.current, { display: "none" });
     },

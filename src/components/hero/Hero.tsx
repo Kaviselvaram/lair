@@ -15,35 +15,54 @@ export default function Hero() {
   useGSAP(
     () => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const base = reduced ? 0 : 2.6;
+      const base = reduced ? 0 : 0.25;
 
       // Line mask reveal for the headline (keeps gradient fills intact).
-      gsap.set(".hero-line-inner", { yPercent: 120 });
+      gsap.set(".hero-line-inner", { yPercent: 100 });
       gsap.to(".hero-line-inner", {
         yPercent: 0,
-        duration: 1.3,
-        ease: "power4.out",
-        stagger: 0.12,
+        duration: 1.1,
+        ease: "power3.out",
+        stagger: 0.1,
         delay: base,
+        overwrite: "auto",
       });
 
       gsap.fromTo(
         ".hero-fade",
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 1.1, ease: "power3.out", stagger: 0.1, delay: base + 0.5 },
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          stagger: 0.08,
+          delay: base + 0.35,
+          overwrite: "auto",
+        },
       );
 
       if (!reduced) {
         gsap.to(".hero-photo", {
-          scale: 1.12,
+          scale: 1.08,
           ease: "none",
-          scrollTrigger: { trigger: ref.current, start: "top top", end: "bottom top", scrub: true },
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
         });
         gsap.to(".hero-copy", {
-          yPercent: -12,
-          opacity: 0.2,
+          yPercent: -10,
+          opacity: 0.3,
           ease: "none",
-          scrollTrigger: { trigger: ref.current, start: "top top", end: "bottom top", scrub: true },
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
         });
       }
     },
