@@ -21,59 +21,56 @@ export default function Gallery() {
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add("(min-width: 768px)", () => {
-        const el = track.current!;
-        const scrollLen = el.scrollWidth - window.innerWidth;
-        const tween = gsap.to(el, {
-          x: -scrollLen,
-          ease: "none",
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top top",
-            end: () => `+=${scrollLen + window.innerHeight * 0.5}`,
-            scrub: 0.8,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            fastScrollEnd: true,
-          },
-        });
-        return () => tween.kill();
-      });
-      return () => mm.revert();
-    },
-    { scope: root },
-  );
+  const scroll = (dir: number) => {
+    if (track.current) {
+      track.current.scrollBy({ left: dir * 420, behavior: "smooth" });
+    }
+  };
 
   return (
     <section
       id="destinations"
       ref={root}
-      className="relative z-10 overflow-hidden py-20 md:py-0"
+      className="relative z-10 overflow-hidden py-24 md:py-32"
       aria-label="Destinations"
     >
       <SectionMesh veil={0.66} />
-      <div className="relative z-10 md:flex md:h-[100svh] md:flex-col md:justify-center md:overflow-hidden">
-        <div className="px-5 md:px-10">
-          <p className="u-eyebrow mb-4">Destinations</p>
-          <h2 className="u-display mb-10 text-[11vw] leading-[0.9] text-paper md:mb-14 md:text-[5vw]">
-            <SplitText text="GO WHERE THE LIGHT CHANGES." as="span" />
-          </h2>
+      <div className="relative z-10">
+        <div className="mx-auto flex max-w-7xl items-end justify-between px-5 md:px-10">
+          <div>
+            <p className="u-eyebrow mb-4">Destinations</p>
+            <h2 className="u-display text-[11vw] leading-[0.9] text-paper md:text-[5vw]">
+              <SplitText text="GO WHERE THE LIGHT CHANGES." as="span" />
+            </h2>
+          </div>
+          <div className="hidden gap-3 md:flex">
+            <button
+              onClick={() => scroll(-1)}
+              aria-label="Scroll left"
+              className="flex h-12 w-12 items-center justify-center rounded-full border border-line text-paper transition-colors hover:border-cyan"
+            >
+              ←
+            </button>
+            <button
+              onClick={() => scroll(1)}
+              aria-label="Scroll right"
+              className="flex h-12 w-12 items-center justify-center rounded-full border border-line text-paper transition-colors hover:border-cyan"
+            >
+              →
+            </button>
+          </div>
         </div>
 
-        {/* Track: horizontal on desktop (scrubbed), native swipe on mobile */}
+        {/* Track: fluid horizontal swipe with smooth momentum */}
         <div
           ref={track}
-          className="flex gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] will-change-transform md:gap-8 md:overflow-visible md:px-10 md:pb-0"
-          style={{ scrollSnapType: "x mandatory", transform: "translateZ(0)" }}
+          className="mt-12 flex gap-5 overflow-x-auto px-5 pb-6 [scrollbar-width:none] md:gap-7 md:px-10"
+          style={{ scrollSnapType: "x mandatory" }}
         >
           {destinations.map((d, i) => (
             <article
               key={d.code}
-              className="group relative aspect-[3/4] w-[78vw] shrink-0 overflow-hidden rounded-3xl border border-line will-change-transform md:aspect-[4/5] md:h-[62vh] md:w-auto"
+              className="group relative aspect-[3/4] w-[75vw] shrink-0 overflow-hidden rounded-3xl border border-line transition-transform duration-500 hover:scale-[1.02] md:aspect-[4/5] md:h-[58vh] md:w-auto"
               style={{ scrollSnapAlign: "start", transform: "translateZ(0)" }}
             >
               <AtmoImage
@@ -82,7 +79,7 @@ export default function Gallery() {
                 from={HUES[i][0]}
                 to={HUES[i][1]}
                 className="absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-105"
-                sizes="(max-width: 768px) 78vw, 40vw"
+                sizes="(max-width: 768px) 75vw, 38vw"
               />
               <div className="absolute inset-0 flex flex-col justify-between p-6">
                 <div className="flex items-start justify-between">

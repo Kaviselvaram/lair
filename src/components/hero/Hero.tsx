@@ -106,8 +106,7 @@ export default function Hero() {
           </span>
           <span className="block overflow-hidden pb-[0.12em]">
             <span
-              className="hero-line-inner text-clip-img block text-[16vw] italic leading-[0.82] md:text-[12.5vw] lg:text-[11vw]"
-              style={{ backgroundImage: "url(/img/text-sky.jpg)" }}
+              className="hero-line-inner text-iridescent block text-[16vw] italic leading-[0.82] md:text-[12.5vw] lg:text-[11vw]"
             >
               weather.
             </span>

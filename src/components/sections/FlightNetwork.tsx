@@ -54,39 +54,35 @@ export default function FlightNetwork({ staticMode = false }: { staticMode?: boo
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: root.current,
-          start: "top top",
-          end: "+=150%",
-          scrub: 0.8,
-          pin: true,
-          anticipatePin: 1,
-          fastScrollEnd: true,
+          start: "top 65%",
+          once: true,
         },
       });
 
       const order = ["ny", "mc", "tk", "mv", "db"];
       order.forEach((id, i) => {
-        const at = i * 0.7;
-        tl.to(`#fn-${id}`, { drawSVG: "100%", duration: 1, ease: "power1.inOut" }, at);
+        const at = i * 0.22;
+        tl.to(`#fn-${id}`, { drawSVG: "100%", duration: 0.8, ease: "power2.out" }, at);
         tl.to(
           `.fn-node[data-id="${id}"]`,
-          { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" },
-          at + 0.8,
+          { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" },
+          at + 0.5,
         );
       });
 
       // The jet flies the Tokyo route while it draws.
-      const tkStart = order.indexOf("tk") * 0.7;
+      const tkStart = order.indexOf("tk") * 0.22;
       tl.set(plane, { opacity: 1 }, tkStart);
       tl.to(
         plane,
         {
           motionPath: { path: heroPath!, align: heroPath!, alignOrigin: [0.5, 0.5], autoRotate: true },
-          duration: 1,
+          duration: 1.1,
           ease: "power1.inOut",
         },
         tkStart,
       );
-      tl.to(plane, { opacity: 0, duration: 0.2 }, tkStart + 1);
+      tl.to(plane, { opacity: 0, duration: 0.25 }, tkStart + 1.1);
     },
     { scope: root, dependencies: [] },
   );
