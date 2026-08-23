@@ -57,15 +57,23 @@ export default function DestinationShowcase() {
     { dependencies: [selected], scope: root },
   );
 
-  // Subtle pointer parallax on the imagery.
+  // Subtle pointer parallax on the imagery (GPU-accelerated).
   useGSAP(
     () => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       let raf = 0;
+      let lastX = -999;
+      let lastY = -999;
+      const el = root.current?.querySelector<HTMLElement>(".dshow-media");
+      if (!el) return;
+
       const loop = () => {
-        const el = root.current?.querySelector<HTMLElement>(".dshow-media");
-        if (el) {
-          el.style.transform = `scale(1.06) translate(${state.smooth.x * -1.4}%, ${state.smooth.y * -1.4}%)`;
+        const sx = state.smooth.x;
+        const sy = state.smooth.y;
+        if (Math.abs(sx - lastX) > 0.002 || Math.abs(sy - lastY) > 0.002) {
+          lastX = sx;
+          lastY = sy;
+          el.style.transform = `scale(1.04) translate3d(${(sx * -1.2).toFixed(2)}%, ${(sy * -1.2).toFixed(2)}%, 0)`;
         }
         raf = requestAnimationFrame(loop);
       };

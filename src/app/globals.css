@@ -162,27 +162,30 @@ html.lenis, html.lenis body { height: auto; }
 /* Glass panel */
 .glass {
   background: color-mix(in oklab, var(--ink-2) 55%, transparent);
-  backdrop-filter: blur(16px) saturate(1.2);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
   border: 1px solid var(--line);
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
-/* Film grain overlay */
+/* Film grain overlay - GPU composited without mix-blend-mode raster overhead */
 .grain::after {
   content: "";
   position: fixed;
   inset: -50%;
   pointer-events: none;
   z-index: 90;
-  opacity: 0.045;
-  mix-blend-mode: overlay;
+  opacity: 0.032;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grainShift 6s steps(6) infinite;
+  animation: grainShift 8s steps(6) infinite;
+  transform: translateZ(0);
+  will-change: transform;
 }
 @keyframes grainShift {
-  0% { transform: translate(0, 0); }
-  50% { transform: translate(-2%, 1%); }
-  100% { transform: translate(1%, -1.5%); }
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-1.5%, 1%, 0); }
+  100% { transform: translate3d(1%, -1.5%, 0); }
 }
 
 /* Image-filled typography — a photograph shows THROUGH the letters (Norway-style). */
@@ -202,32 +205,30 @@ html.lenis, html.lenis body { height: auto; }
 
 /* Infinite marquee */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 .marquee-track {
   display: inline-flex;
   white-space: nowrap;
   animation: marquee 32s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
-/* Mesh-gradient blob drift (transform-based, GPU-composited). Pointer offset is
-   applied via the independent `translate` property so it composes cleanly. */
-@keyframes drift-a { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(7%,9%) scale(1.05)} 66%{transform:translate(-6%,5%) scale(0.97)} }
-@keyframes drift-b { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(-8%,6%) scale(1.06)} 70%{transform:translate(5%,-7%) scale(0.96)} }
-@keyframes drift-c { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(9%,-6%) scale(1.04)} }
-@keyframes drift-d { 0%,100%{transform:translate(0,0) scale(1)} 45%{transform:translate(-7%,-8%) scale(1.05)} 75%{transform:translate(6%,7%) scale(0.98)} }
+/* Mesh-gradient blob drift (transform-based, GPU-composited). */
+@keyframes drift-a { 0%,100%{transform:translate3d(0,0,0) scale(1)} 33%{transform:translate3d(7%,9%,0) scale(1.05)} 66%{transform:translate3d(-6%,5%,0) scale(0.97)} }
+@keyframes drift-b { 0%,100%{transform:translate3d(0,0,0) scale(1)} 40%{transform:translate3d(-8%,6%,0) scale(1.06)} 70%{transform:translate3d(5%,-7%,0) scale(0.96)} }
+@keyframes drift-c { 0%,100%{transform:translate3d(0,0,0) scale(1)} 50%{transform:translate3d(9%,-6%,0) scale(1.04)} }
+@keyframes drift-d { 0%,100%{transform:translate3d(0,0,0) scale(1)} 45%{transform:translate3d(-7%,-8%,0) scale(1.05)} 75%{transform:translate3d(6%,7%,0) scale(0.98)} }
 
 .mesh-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(38px);
-  /* No mix-blend-mode: it forces a per-frame backdrop re-blend and destroys
-     scroll performance. On the dark ink base, bright colours read as additive
-     anyway. Each blob is promoted to its own compositor layer and only its
-     transform/translate changes per frame (cheap). */
-  will-change: transform, translate;
-  transform: translateZ(0);
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

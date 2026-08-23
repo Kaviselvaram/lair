@@ -66,14 +66,14 @@ export default function Gallery() {
         {/* Track: horizontal on desktop (scrubbed), native swipe on mobile */}
         <div
           ref={track}
-          className="flex gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] md:gap-8 md:overflow-visible md:px-10 md:pb-0"
-          style={{ scrollSnapType: "x mandatory" }}
+          className="flex gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] will-change-transform md:gap-8 md:overflow-visible md:px-10 md:pb-0"
+          style={{ scrollSnapType: "x mandatory", transform: "translateZ(0)" }}
         >
           {destinations.map((d, i) => (
             <article
               key={d.code}
-              className="group relative aspect-[3/4] w-[78vw] shrink-0 overflow-hidden rounded-3xl border border-line md:aspect-[4/5] md:h-[62vh] md:w-auto"
-              style={{ scrollSnapAlign: "start" }}
+              className="group relative aspect-[3/4] w-[78vw] shrink-0 overflow-hidden rounded-3xl border border-line will-change-transform md:aspect-[4/5] md:h-[62vh] md:w-auto"
+              style={{ scrollSnapAlign: "start", transform: "translateZ(0)" }}
             >
               <AtmoImage
                 src={d.image}

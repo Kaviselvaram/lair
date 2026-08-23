@@ -49,20 +49,30 @@ export default function AtmosphereOverlay({
       )})`;
     };
 
+    let lastTx = -999;
+    let lastTy = -999;
+
     const loop = () => {
       const el = ref.current;
       if (el) {
         const tx = state.smooth.x * 0.5 + 0.5;
         const ty = state.smooth.y * 0.5 + 0.5;
-        mx += (tx - mx) * 0.08;
-        my += (ty - my) * 0.08;
-        const hue = 0.08 + state.smooth.x * 0.42;
-        const c1 = spectrum(hue);
-        const c2 = spectrum(hue + 0.35);
-        el.style.setProperty("--mx", `${(mx * 100).toFixed(2)}%`);
-        el.style.setProperty("--my", `${(my * 100).toFixed(2)}%`);
-        el.style.setProperty("--c1", c1);
-        el.style.setProperty("--c2", c2);
+        const dx = Math.abs(tx - lastTx);
+        const dy = Math.abs(ty - lastTy);
+
+        if (dx > 0.001 || dy > 0.001 || Math.abs(tx - mx) > 0.002 || Math.abs(ty - my) > 0.002) {
+          lastTx = tx;
+          lastTy = ty;
+          mx += (tx - mx) * 0.08;
+          my += (ty - my) * 0.08;
+          const hue = 0.08 + state.smooth.x * 0.42;
+          const c1 = spectrum(hue);
+          const c2 = spectrum(hue + 0.35);
+          el.style.setProperty("--mx", `${(mx * 100).toFixed(1)}%`);
+          el.style.setProperty("--my", `${(my * 100).toFixed(1)}%`);
+          el.style.setProperty("--c1", c1);
+          el.style.setProperty("--c2", c2);
+        }
       }
       raf = requestAnimationFrame(loop);
     };

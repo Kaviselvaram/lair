@@ -51,10 +51,9 @@ export default function SectionMesh({
             height: b.size,
             marginLeft: `calc(${b.size} / -2)`,
             marginTop: `calc(${b.size} / -2)`,
-            background: `radial-gradient(circle at center, ${b.color} 0%, transparent 62%)`,
+            background: `radial-gradient(circle at center, ${b.color} 0%, ${b.color}99 20%, ${b.color}40 45%, ${b.color}10 60%, transparent 72%)`,
             opacity: b.opacity,
             animation: `${b.anim} ${b.dur}s ease-in-out infinite`,
-            translate: `calc(var(--mesh-px, 0) * ${b.react}px) calc(var(--mesh-py, 0) * ${b.react}px)`,
           }}
         />
       ))}

@@ -1,97 +1,118 @@
 "use client";
 
-import { useRef } from "react";
-import { gsap, ScrollSmoother, useGSAP } from "@/lib/gsap";
+import { useEffect, useRef } from "react";
+import Lenis from "lenis";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { state, bindPointer, updateSmooth } from "@/lib/store";
 
+let globalLenis: Lenis | null = null;
+
 /**
- * GSAP-native smooth scrolling. ScrollSmoother shares ScrollTrigger's ticker,
- * so scroll-linked animations stay perfectly in sync — no Lenis↔ScrollTrigger
- * race, which is what caused the jitter. `effects` enables data-speed /
- * data-lag parallax on any element for cheap, composited depth.
- *
- * Also pumps the smoothed pointer into CSS vars (--mesh-px/--mesh-py) once per
- * frame for the section mesh gradients.
+ * Butter-smooth 120 FPS momentum scrolling with Lenis + GSAP ScrollTrigger.
+ * Synchronized through the GSAP ticker for zero-latency scroll-linked animations
+ * without DOM hijacking or synthetic matrix transform lag.
  */
 export default function SmoothScrollProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const wrapper = useRef<HTMLDivElement>(null);
-  const content = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      bindPointer();
-      const reduced = state.reducedMotion;
+  useEffect(() => {
+    bindPointer();
+    const reduced = state.reducedMotion;
 
-      // QA escape hatch: ?nosmooth renders with native scroll (no fixed+transform
-      // wrapper) so screenshot tooling can composite scrolled positions.
-      const noSmooth =
-        typeof window !== "undefined" &&
-        window.location.search.includes("nosmooth");
+    const noSmooth =
+      typeof window !== "undefined" &&
+      window.location.search.includes("nosmooth");
 
-      let smoother: ScrollSmoother | null = null;
-      if (!noSmooth) {
-        smoother = ScrollSmoother.create({
-          wrapper: wrapper.current!,
-          content: content.current!,
-          smooth: reduced ? 0 : 1.15,
-          smoothTouch: reduced ? 0 : 0.1,
-          normalizeScroll: true,
-          effects: true,
-        });
-        (window as WindowWithSmoother).__smoother = smoother;
-      }
+    if (!noSmooth && !reduced) {
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: "vertical",
+        gestureOrientation: "vertical",
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        touchMultiplier: 1.5,
+        infinite: false,
+      });
 
-      // Publish smoothed pointer + scroll progress every frame (no re-render).
-      let last = performance.now();
-      const tick = () => {
-        const now = performance.now();
-        const dt = Math.min(0.05, (now - last) / 1000);
-        last = now;
-        updateSmooth(dt);
-        state.scroll = smoother
-          ? smoother.progress
-          : window.scrollY / (document.body.scrollHeight - window.innerHeight || 1);
-        const r = document.documentElement.style;
-        r.setProperty("--mesh-px", state.smooth.x.toFixed(3));
-        r.setProperty("--mesh-py", state.smooth.y.toFixed(3));
+      globalLenis = lenis;
+      (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
+      // Sync Lenis with GSAP ScrollTrigger
+      lenis.on("scroll", ScrollTrigger.update);
+
+      const tickerCallback = (time: number) => {
+        lenis.raf(time * 1000);
       };
-      gsap.ticker.add(tick);
+
+      gsap.ticker.add(tickerCallback);
+      gsap.ticker.lagSmoothing(0);
+
+      // Lightweight pointer & scroll store updater without DOM style invalidations
+      let lastTime = performance.now();
+      const pointerTick = () => {
+        const now = performance.now();
+        const dt = Math.min(0.05, (now - lastTime) / 1000);
+        lastTime = now;
+        updateSmooth(dt);
+        state.scroll =
+          window.scrollY /
+          (document.documentElement.scrollHeight - window.innerHeight || 1);
+      };
+      gsap.ticker.add(pointerTick);
 
       return () => {
-        gsap.ticker.remove(tick);
-        smoother?.kill();
-        (window as WindowWithSmoother).__smoother = undefined;
+        gsap.ticker.remove(tickerCallback);
+        gsap.ticker.remove(pointerTick);
+        lenis.destroy();
+        globalLenis = null;
+        (window as unknown as { __lenis?: Lenis }).__lenis = undefined;
       };
-    },
-    { dependencies: [] },
-  );
+    } else {
+      let lastTime = performance.now();
+      const pointerTick = () => {
+        const now = performance.now();
+        const dt = Math.min(0.05, (now - lastTime) / 1000);
+        lastTime = now;
+        updateSmooth(dt);
+      };
+      gsap.ticker.add(pointerTick);
+
+      return () => {
+        gsap.ticker.remove(pointerTick);
+      };
+    }
+  }, []);
 
   return (
-    <div id="smooth-wrapper" ref={wrapper}>
-      <div id="smooth-content" ref={content}>
-        {children}
-      </div>
+    <div ref={containerRef} className="w-full">
+      {children}
     </div>
   );
 }
 
-type WindowWithSmoother = Window & { __smoother?: ScrollSmoother | undefined };
-
 /** Smoothly scroll to a selector or offset. */
 export function scrollToTarget(target: string | number) {
-  const smoother = (window as WindowWithSmoother).__smoother;
-  if (smoother) {
-    smoother.scrollTo(target, true, "top top");
+  if (globalLenis) {
+    globalLenis.scrollTo(target, { duration: 1.4 });
   } else if (typeof target === "string") {
     document.querySelector(target)?.scrollIntoView({ behavior: "smooth" });
+  } else if (typeof target === "number") {
+    window.scrollTo({ top: target, behavior: "smooth" });
   }
 }
 
 /** Pause/resume smoothing (used during the preloader). */
 export function setScrollPaused(paused: boolean) {
-  (window as WindowWithSmoother).__smoother?.paused(paused);
+  if (globalLenis) {
+    if (paused) {
+      globalLenis.stop();
+    } else {
+      globalLenis.start();
+    }
+  }
 }
