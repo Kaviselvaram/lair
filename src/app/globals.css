@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+/* ============================================================
+   L/AIR — DESIGN TOKENS
+   Colour is the wealth signal. An iridescent, alive palette
+   with luxury editorial type. Real photography leads.
+   ============================================================ */
+
+:root {
+  /* Environment */
+  --ink: #050510;
+  --ink-2: #0a0a1c;
+  --ink-3: #10102a;
+
+  /* Iridescent atmospheric spectrum */
+  --dawn: #ff8a7a;
+  --coral: #ff6b9d;
+  --violet: #8b5cff;
+  --ultraviolet: #5b2ce0;
+  --magenta: #ff4fd8;
+  --electric: #3a6bff;
+  --cyan: #35e6ff;
+  --aurora: #46f0c8;
+  --gold: #ffd27a;
+
+  /* Foreground */
+  --paper: #f6f4ff;
+  --paper-dim: rgba(246, 244, 255, 0.66);
+  --paper-faint: rgba(246, 244, 255, 0.4);
+  --line: rgba(246, 244, 255, 0.12);
+  --line-strong: rgba(246, 244, 255, 0.26);
+
+  --metal: #cfd0e8;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-metal: var(--metal);
+  --color-dawn: var(--dawn);
+  --color-coral: var(--coral);
+  --color-violet: var(--violet);
+  --color-magenta: var(--magenta);
+  --color-electric: var(--electric);
+  --color-cyan: var(--cyan);
+  --color-aurora: var(--aurora);
+  --color-gold: var(--gold);
+  --color-line: var(--line);
+
+  --font-display: var(--font-display), "Fraunces", Georgia, serif;
+  --font-sans: var(--font-body), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), "Space Grotesk", ui-monospace, monospace;
+}
+
+/* ------------------------------------------------------------ */
+
+* { box-sizing: border-box; }
+
+html {
+  background: var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body), "Inter", system-ui, sans-serif;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Lenis smooth scroll */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+::selection {
+  background: color-mix(in oklab, var(--magenta) 60%, transparent);
+  color: #fff;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ---- Typographic system ------------------------------------ */
+
+.font-display {
+  font-family: var(--font-display), "Fraunces", Georgia, serif;
+}
+.font-mono {
+  font-family: var(--font-mono), "Space Grotesk", monospace;
+}
+
+.u-eyebrow {
+  font-family: var(--font-mono), "Space Grotesk", monospace;
+  font-size: clamp(0.62rem, 0.8vw, 0.75rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+  font-weight: 500;
+}
+
+/* Big editorial serif statements */
+.u-display {
+  font-family: var(--font-display), "Fraunces", Georgia, serif;
+  font-weight: 300;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  font-optical-sizing: auto;
+}
+.u-display em, .u-display i {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Iridescent animated gradient text — the colour signature on type */
+.text-iridescent {
+  background: linear-gradient(
+    100deg,
+    var(--gold) 0%,
+    var(--coral) 20%,
+    var(--magenta) 40%,
+    var(--violet) 58%,
+    var(--electric) 74%,
+    var(--cyan) 88%,
+    var(--aurora) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: irid 9s linear infinite;
+}
+@keyframes irid {
+  to { background-position: 250% 0; }
+}
+
+/* Contrast scrim for type over imagery */
+.u-scrim-text {
+  text-shadow: 0 2px 44px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* Colour glows */
+.glow-cyan { box-shadow: 0 0 40px -8px color-mix(in oklab, var(--cyan) 70%, transparent); }
+.glow-magenta { box-shadow: 0 0 44px -8px color-mix(in oklab, var(--magenta) 70%, transparent); }
+
+/* Glass panel */
+.glass {
+  background: color-mix(in oklab, var(--ink-2) 55%, transparent);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid var(--line);
+}
+
+/* Film grain overlay */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grainShift 6s steps(6) infinite;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(-2%, 1%); }
+  100% { transform: translate(1%, -1.5%); }
+}
+
+/* Image-filled typography — a photograph shows THROUGH the letters (Norway-style). */
+.text-clip-img {
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-repeat: no-repeat;
+  background-size: 140% 140%;
+  animation: clipDrift 20s ease-in-out infinite;
+  filter: drop-shadow(0 2px 26px rgba(0, 0, 0, 0.5));
+}
+@keyframes clipDrift {
+  0%, 100% { background-position: 28% 42%; }
+  50% { background-position: 72% 58%; }
+}
+
+/* Infinite marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 32s linear infinite;
+}
+
+/* Mesh-gradient blob drift (transform-based, GPU-composited). Pointer offset is
+   applied via the independent `translate` property so it composes cleanly. */
+@keyframes drift-a { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(7%,9%) scale(1.05)} 66%{transform:translate(-6%,5%) scale(0.97)} }
+@keyframes drift-b { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(-8%,6%) scale(1.06)} 70%{transform:translate(5%,-7%) scale(0.96)} }
+@keyframes drift-c { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(9%,-6%) scale(1.04)} }
+@keyframes drift-d { 0%,100%{transform:translate(0,0) scale(1)} 45%{transform:translate(-7%,-8%) scale(1.05)} 75%{transform:translate(6%,7%) scale(0.98)} }
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(38px);
+  /* No mix-blend-mode: it forces a per-frame backdrop re-blend and destroys
+     scroll performance. On the dark ink base, bright colours read as additive
+     anyway. Each blob is promoted to its own compositor layer and only its
+     transform/translate changes per frame (cheap). */
+  will-change: transform, translate;
+  transform: translateZ(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain::after, .text-iridescent, .marquee-track, .mesh-blob, .text-clip-img { animation: none; }
+  * { scroll-behavior: auto !important; }
+}
